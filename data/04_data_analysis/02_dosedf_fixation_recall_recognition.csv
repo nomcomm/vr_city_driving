@@ -1,0 +1,14 @@
+subject,condition,not_fixated_recalled,more_fixated_recalled,very_fixated_recalled,not_fixated_recognized,more_fixated_recognized,very_fixated_recognized
+sub001,Free_Viewing,0.0,0.0,2.0,6.0,4.0,9.0
+sub002,Count_Sales_Signs,0.0,0.0,2.0,0.0,0.0,7.0
+sub003,Free_Viewing,0.0,0.0,2.0,1.0,0.0,3.0
+sub004,Count_Sales_Signs,0.0,0.0,2.0,2.0,7.0,19.0
+sub005,Free_Viewing,1.0,3.0,1.0,1.0,10.0,10.0
+sub006,Count_Sales_Signs,0.0,2.0,3.0,0.0,2.0,3.0
+sub007,Free_Viewing,1.0,0.0,2.0,1.0,5.0,6.0
+sub008,Count_Sales_Signs,0.0,0.0,4.0,3.0,0.0,16.0
+sub009,Free_Viewing,0.0,0.0,4.0,8.0,0.0,13.0
+sub010,Count_Sales_Signs,0.0,0.0,2.0,2.0,0.0,7.0
+sub011,Free_Viewing,1.0,1.0,2.0,5.0,9.0,9.0
+sub012,Count_Sales_Signs,0.0,0.0,0.0,12.0,0.0,8.0
+sub013,Free_Viewing,0.0,0.0,3.0,2.0,5.0,9.0

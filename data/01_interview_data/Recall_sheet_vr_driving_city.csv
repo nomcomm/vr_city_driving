@@ -1,0 +1,14 @@
+﻿subject,ad_brunch,ad_burger,ad_coffee,ad_pizza,ad_furniture,ad_hotel,ad_lawyer,ad_smartphone,ad_fundraising,ad_travelagency,ad_carinsurance,ad_cosmetics,ad_moviepremier,ad_petstore,ad_clothessale,ad_carpetcleaning,ad_grocerystore,ad_potteryclass,ad_movingbusiness,ad_museum,health_bingedrink,health_smoking,health_drugabuse,health_buckleup,health_textdriving,health_diabetes,health_HIV,health_sunprotection,health_handwashing,health_vaccination,health_healthydiet,health_employee,health_jogging,health_getsleep,health_doctor,health_caffeine,health_greatlake,health_mentalhealth,health_recycling,health_polarbears,condition
+sub001,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Free_Viewing
+sub002,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Count_Sales_Signs
+sub003,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,Free_Viewing
+sub004,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,Count_Sales_Signs
+sub005,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,Free_Viewing
+sub006,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,1,0,0,0,0,0,0,0,0,0,0,Count_Sales_Signs
+sub007,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,Free_Viewing
+sub008,0,0,0,1,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,Count_Sales_Signs
+sub009,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Free_Viewing
+sub010,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Count_Sales_Signs
+sub011,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,1,0,1,0,0,0,0,0,Free_Viewing
+sub012,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Count_Sales_Signs
+sub013,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,Free_Viewing
