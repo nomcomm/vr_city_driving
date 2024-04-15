@@ -1,10 +1,10 @@
 ,position_index,billboard_image_at_position_text,billboard_image_at_position_text_attention,fix_bill,billboard#_fixated_count,billboard#_duration,recall,recognition
-0,1,health_smoking,lessatt_health_smoking,1,1.0,0.8200000000000003,0,1.0
+0,1,health_smoking,lessatt_health_smoking,1,1.0,0.8200000000000003,1,1.0
 1,2,health_doctor,moreatt_health_doctor,2,1.0,2.870000000000001,0,0.0
 2,3,health_vaccination,lessatt_health_vaccination,3,1.0,1.1800000000000015,0,1.0
 3,4,ad_brunch,moreatt_ad_brunch,4,2.0,2.3999999999999986,0,1.0
 4,5,health_textdriving,lessatt_health_textdriving,5,1.0,0.3399999999999998,0,1.0
-5,6,health_jogging,moreatt_health_jogging,6,5.0,6.920000000000016,0,1.0
+5,6,health_jogging,moreatt_health_jogging,6,5.0,6.920000000000016,1,1.0
 6,7,ad_coffee,lessatt_ad_coffee,7,4.0,5.219999999999999,1,1.0
 7,8,health_handwashing,moreatt_health_handwashing,8,2.0,1.7099999999999935,0,1.0
 8,9,health_greatlake,lessatt_health_greatlake,9,2.0,3.8299999999999983,0,0.0
@@ -37,5 +37,5 @@
 35,36,ad_travelagency,moreatt_ad_travelagency,0,0.0,0.0,0,0.0
 36,37,ad_petstore,lessatt_ad_petstore,37,1.0,0.9699999999999988,0,1.0
 37,38,ad_lawyer,moreatt_ad_lawyer,38,2.0,1.8899999999999864,0,1.0
-38,39,ad_burger,lessatt_ad_burger,39,1.0,1.3199999999999932,0,1.0
+38,39,ad_burger,lessatt_ad_burger,39,1.0,1.3199999999999932,1,1.0
 39,40,health_polarbears,moreatt_health_polarbears,40,2.0,1.309999999999974,0,0.0
