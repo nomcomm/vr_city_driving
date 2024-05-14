@@ -45,6 +45,7 @@ df_total_mani_checked$billboard_name <- as.factor(df_total_mani_checked$billboar
 df_total_mani_checked$billboard_attention_level <- as.factor(df_total_mani_checked$billboard_attention_level)
 df_total_mani_checked$gaze_behavior <- factor(df_total_mani_checked$gaze_behavior, levels = c("not_fixated", "fixated", "very_fixated"))
 
+
 #overview data visualization
 data <- 
   df_total_mani_checked %>%
@@ -119,17 +120,16 @@ ggplot(data2, aes(x = position_index, y = total_gaze_duration, color = condition
         axis.line.x=element_line(color="black"))  # Ensure the x-axis line is visible
 
 
-ggplot(data2, aes(x = condition, y = total_recognition, color = billboard_attention_level)) +
-  geom_point(size=5) +
-  geom_line(size=1, aes(group = billboard_attention_level)) +
-  theme_classic(base_size = 20) +
-  theme(legend.position = "bottom") +
-  guides(color = guide_legend(ncol = 1)) +
-  scale_color_manual(values = c("less_attention" = "darkgreen", "more_attention" = "black"),
-                     labels = c("less_attention" = "Less Attention-Grabbing", "more_attention" = "More Attention-Grabbing")) + 
-  scale_x_discrete(labels=c(not_fixated = "Fixation = 0", fixated = "Fixation = 1", very_fixated = "Fixation > 1"))
+#replication of previous study
+df_total_mani_checked$recall <- as.num(df_total_mani_checked$recall)
+df_total_mani_checked$recognition <- as.factor(df_total_mani_checked$recognition)
+
+process(data = df_total_mani_checked, y = "recall", x = "condition", m ="fixated", model = 4)
+
 
 #hypothesis and research question testing
+boxplot(df_total_mani_checked$fixation_duration)
+
 recall <-
   glmer(recall ~ fixation_duration+condition + (1|billboard_name), data = df_total_mani_checked, family = "binomial")
 Anova(recall)
@@ -258,6 +258,8 @@ ggplot(gazeduration_predict3_df, aes(x = position_index, y = response)) +
         #axis.ticks.y=element_blank(),
         axis.line.x=element_line(color="black"))
 
+
+#Percent indicated as attention-grabbing
 df_survey <- read_csv('02_qualtrics_data/recognition_survey_vr_city_cleaned.csv')
 df_survey_filter <- df_survey %>%
   filter(!Subject %in% c("sub020", "sub017"))
@@ -277,3 +279,7 @@ agcheck_pivot <- attentiongrabbingcheck %>%
     TRUE ~ billboard_name  # Keep all other values unchanged
   ))
 print(agcheck_pivot, n=40)
+
+
+
+
