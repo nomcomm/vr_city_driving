@@ -196,6 +196,31 @@ gazeduration <-
           ziformula = ~ 1,  # Formula for zero-inflation component
           family = ziGamma(link = "log"),  # Specify zero-inflated Gamma family
           data = updated_data)
+
+gazeduration2 <- 
+  glmmTMB(fixation_duration ~ condition+billboard_attention_level+position_index + 
+            (1 | billboard_name)+ (1| subject), 
+          ziformula = ~ (1 | billboard_name)+ (1| subject),  # Formula for zero-inflation component
+          family = ziGamma(link = "log"),  # Specify zero-inflated Gamma family
+          data = updated_data)
+
+gazeduration3 <- 
+  glmmTMB(fixation_duration ~ condition+billboard_attention_level+position_index + 
+            (1 | billboard_name)+ (1| subject), 
+          ziformula = ~ condition+billboard_attention_level+position_index,  # Formula for zero-inflation component
+          family = ziGamma(link = "log"),  # Specify zero-inflated Gamma family
+          data = updated_data)
+gazeduration4 <- 
+  glmmTMB(fixation_duration ~ condition+billboard_attention_level+position_index + 
+            (1 | billboard_name)+ (1| subject), 
+          ziformula = ~ condition+billboard_attention_level+position_index  + 
+            (1 | billboard_name)+ (1| subject),  # Formula for zero-inflation component
+          family = ziGamma(link = "log"),  # Specify zero-inflated Gamma family
+          data = updated_data)
+lrtest(gazeduration3,gazeduration4)
+Anova(gazeduration4)
+summary(gazeduration4)
+
 Anova(gazeduration, type="3")
 summary(gazeduration)
 performance(gazeduration)
