@@ -193,36 +193,11 @@ ggplot(updated_data, aes(x = fixation_duration, y = recognition, color = conditi
 gazeduration <- 
   glmmTMB(fixation_duration ~ condition+billboard_attention_level+position_index + 
             (1 | billboard_name)+ (1| subject), 
-          ziformula = ~ 1,  # Formula for zero-inflation component
-          family = ziGamma(link = "log"),  # Specify zero-inflated Gamma family
-          data = updated_data)
-
-gazeduration2 <- 
-  glmmTMB(fixation_duration ~ condition+billboard_attention_level+position_index + 
-            (1 | billboard_name)+ (1| subject), 
           ziformula = ~ (1 | billboard_name)+ (1| subject),  # Formula for zero-inflation component
           family = ziGamma(link = "log"),  # Specify zero-inflated Gamma family
           data = updated_data)
-
-gazeduration3 <- 
-  glmmTMB(fixation_duration ~ condition+billboard_attention_level+position_index + 
-            (1 | billboard_name)+ (1| subject), 
-          ziformula = ~ condition+billboard_attention_level+position_index,  # Formula for zero-inflation component
-          family = ziGamma(link = "log"),  # Specify zero-inflated Gamma family
-          data = updated_data)
-gazeduration4 <- 
-  glmmTMB(fixation_duration ~ condition+billboard_attention_level+position_index + 
-            (1 | billboard_name)+ (1| subject), 
-          ziformula = ~ condition+billboard_attention_level+position_index  + 
-            (1 | billboard_name)+ (1| subject),  # Formula for zero-inflation component
-          family = ziGamma(link = "log"),  # Specify zero-inflated Gamma family
-          data = updated_data)
-lrtest(gazeduration3,gazeduration4)
-Anova(gazeduration4)
-summary(gazeduration4)
-
-Anova(gazeduration, type="3")
 summary(gazeduration)
+Anova(gazeduration)
 performance(gazeduration)
 data2_1 <- 
   updated_data %>%
@@ -358,40 +333,6 @@ ggplot() +
         axis.text.y = element_blank(),  
         # axis.ticks.y = element_blank(),
         axis.line.x = element_line(color = "black")) 
-
-#Mediation - not included in paper yet
-install.packages("bmlm")
-library(bmlm)
-
-mediation_data <- updated_data
-mediation_data$condition <- 
-  ifelse(mediation_data$condition == "Count_Sales_Signs", 0, 
-         ifelse(mediation_data$condition == "Free_Viewing", 1, mediation_data$condition))
-colnames(updated_data)
-
-fit <- mlm(d = mediation_data,
-           id = "subject",
-           x = "condition",
-           m = "fixation_duration",
-           y = "recall",
-           binary_y = TRUE,
-           priors = list(b=1),
-           cores=4,
-           iter = 10000,
-           control = list(adapt_delta = 0.99))
-mlm_summary(fit)
-
-fit2 <- mlm(d = mediation_data,
-           id = "subject",
-           x = "condition",
-           m = "fixation_count",
-           y = "recall",
-           binary_y = TRUE,
-           priors = list(b=1),
-           cores=4,
-           iter = 10000,
-           control = list(adapt_delta = 0.99))
-mlm_summary(fit2)
 
 
 #Percent indicated as attention-grabbing
