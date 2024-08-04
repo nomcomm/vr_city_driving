@@ -122,9 +122,9 @@ ggplot(data, aes(x = gaze_behavior, y = mean_recall, color = condition)) +
   theme(legend.position = "none",
         axis.title.x=element_blank(),
         axis.title.y=element_blank(),
-        axis.text.x=element_blank(),  # Removes x axis labels
+        #axis.text.x=element_blank(),  # Removes x axis labels
         #axis.ticks.x=element_blank(),
-        axis.text.y=element_blank(),  # Removes x axis labels
+        #axis.text.y=element_blank(),  # Removes x axis labels
         #axis.ticks.y=element_blank(),
         axis.line.x=element_line(color="black"))  # Ensure the x-axis line is visible
 ggplot(data, aes(x = gaze_behavior, y = mean_recognition, color = condition)) +
@@ -140,9 +140,9 @@ ggplot(data, aes(x = gaze_behavior, y = mean_recognition, color = condition)) +
   theme(legend.position = "none",
         axis.title.x=element_blank(),
         axis.title.y=element_blank(),
-        axis.text.x=element_blank(),  # Removes x axis labels
+        #axis.text.x=element_blank(),  # Removes x axis labels
         #axis.ticks.x=element_blank(),
-        axis.text.y=element_blank(),  # Removes x axis labels
+        #axis.text.y=element_blank(),  # Removes x axis labels
         #axis.ticks.y=element_blank(),
         axis.line.x=element_line(color="black"))  # Ensure the x-axis line is visible
 
