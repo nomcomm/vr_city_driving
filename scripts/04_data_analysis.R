@@ -19,6 +19,7 @@ library(here)
 
 setwd(here::here())
 df <- read_csv('data/04_data_analysis/00_all_data.csv')
+options(contrasts = c("contr.sum", "contr.poly"))
 
 #data cleaning
 names(df)[names(df) == 'billboard#_fixated'] <- 'fixated'
@@ -29,14 +30,14 @@ df2 <- read_csv('data/04_data_analysis/01_position_index.csv')
 df_merged <- df %>%
   left_join(df2, by = c("position_index" = "Position"))
 
-#update dataframe with fixation count categories
+#update dataframe 
 updated_data <- df_merged %>%
   filter(!subject %in% c("sub020", "sub017")) %>%
   mutate(
     gaze_behavior = case_when(
       fixation_count == 0 ~ "not_fixated",
-      fixation_count == 1 ~ "fixated",  # Use the median for "fixated"
-      fixation_count > 1 ~ "very_fixated",
+      fixation_count == 1 ~ "fixated",
+      fixation_count > 1 ~ "fixated",
       TRUE ~ NA_character_  # This line is optional, handles cases outside the specified conditions
     ),
     billboard_location = case_when(
@@ -48,6 +49,9 @@ updated_data <- df_merged %>%
       TRUE ~ NA_character_  
     )
   )
+
+updated_data$fixation_duration[updated_data$fixation_duration == 0] <- NA
+
 
 #descriptive analysis
 data0 <- 
@@ -79,66 +83,17 @@ updated_data$condition <- as.factor(updated_data$condition)
 updated_data$subject <- as.factor(updated_data$subject)
 updated_data$billboard_name <- as.factor(updated_data$billboard_name)
 updated_data$billboard_attention_level <- as.factor(updated_data$billboard_attention_level)
-updated_data$gaze_behavior <- factor(updated_data$gaze_behavior, levels = c("not_fixated", "fixated", "very_fixated"))
+updated_data$gaze_behavior <- factor(updated_data$gaze_behavior, levels = c("not_fixated", "fixated"))
 updated_data$billboard_location <- factor(updated_data$billboard_location, levels = c("beginning", "mid_beginning", "middle", "mid_end", "end"))
 updated_data$topic <- 
   ifelse(grepl("^ad_", updated_data$billboard_name), "Commercial", 
          ifelse(grepl("^health_", updated_data$billboard_name), "Health", NA))
 
 #hypothesis and research question testing
-#options(contrasts = c("contr.sum", "contr.poly"))
-
-# data <- 
-#   updated_data %>%
-#   group_by(condition, gaze_behavior) %>%
-#   summarise(
-#     count = n(),
-#     total_recall = sum(recall, na.rm = TRUE),
-#     total_recognition = sum(recognition, na.rm = TRUE),
-#     mean_recall = mean(recall, na.rm = TRUE),
-#     mean_recognition = mean(recognition, na.rm = TRUE)
-#   )
-# ggplot(data, aes(x = gaze_behavior, y = mean_recall, color = condition)) +
-#   geom_point(size=5) +
-#   geom_line(size=1, aes(group = condition)) +
-#   #facet_wrap(~condition) +
-#   theme_classic(base_size = 20) +
-#   guides(color = guide_legend(ncol = 1)) +
-#   scale_color_manual(values = c("Count_Sales_Signs" = "navyblue", "Free_Viewing" = "black"),
-#                      labels = c("Count_Sales_Signs" = "Sale Sign Counting", "Free_Viewing" = "Free Viewing")) + 
-#   #scale_x_discrete(labels=c(not_fixated = "Fixation = 0", fixated = "Fixation = Median", very_fixated = "Fixation > Median")) + 
-#   scale_y_continuous(expand = c(0, 0), limits = c(0, .2)) +  # Prevents the y-axis from extending below zero
-#   theme(legend.position = "none",
-#         axis.title.x=element_blank(),
-#         axis.title.y=element_blank(),
-#         #axis.text.x=element_blank(),  # Removes x axis labels
-#         #axis.ticks.x=element_blank(),
-#         #axis.text.y=element_blank(),  # Removes x axis labels
-#         #axis.ticks.y=element_blank(),
-#         axis.line.x=element_line(color="black"))  # Ensure the x-axis line is visible
-# ggplot(data, aes(x = gaze_behavior, y = mean_recognition, color = condition)) +
-#   geom_point(size=5) +
-#   geom_line(size=1, aes(group = condition)) +
-#   #facet_wrap(~condition) +
-#   theme_classic(base_size = 20) +
-#   guides(color = guide_legend(ncol = 1)) +
-#   scale_color_manual(values = c("Count_Sales_Signs" = "navyblue", "Free_Viewing" = "black"),
-#                      labels = c("Count_Sales_Signs" = "Sale Sign Counting", "Free_Viewing" = "Free Viewing")) + 
-#   scale_x_discrete(labels=c(not_fixated = "Fixation = 0", fixated = "Fixation = Median", very_fixated = "Fixation > Median")) + 
-#   scale_y_continuous(expand = c(0, 0), limits = c(0, .6), breaks = seq(0, .6, by = .2)) +  # Prevents the y-axis from extending below zero
-#   theme(legend.position = "none",
-#         axis.title.x=element_blank(),
-#         axis.title.y=element_blank(),
-#         #axis.text.x=element_blank(),  # Removes x axis labels
-#         #axis.ticks.x=element_blank(),
-#         #axis.text.y=element_blank(),  # Removes x axis labels
-#         #axis.ticks.y=element_blank(),
-#         axis.line.x=element_line(color="black"))  # Ensure the x-axis line is visible
 
 recall <-
-  glmmTMB(recall ~ fixation_duration+condition + (1|billboard_name), data = updated_data, family = "binomial")
+  glmmTMB(recall ~ fixation_duration + condition + (1|billboard_name), data = updated_data, family = "binomial")
 Anova(recall, type = "2")
-
 performance(recall)
 check_collinearity(recall)
 ggplot(updated_data, aes(x = fixation_duration, y = recall, color = condition)) +
@@ -157,11 +112,41 @@ ggplot(updated_data, aes(x = fixation_duration, y = recall, color = condition)) 
         #axis.ticks.y=element_blank(),
         axis.line.x=element_line(color="black"))  # Ensure the x-axis line is visible
 
+recall2 <-
+  glmmTMB(recall ~ gaze_behavior + condition + (1|billboard_name), data = updated_data, family = "binomial")
+Anova(recall2, type = "2")
+data <-
+  updated_data %>%
+  group_by(condition, gaze_behavior) %>%
+  summarise(
+    count = n(),
+    total_recall = sum(recall, na.rm = TRUE),
+    total_recognition = sum(recognition, na.rm = TRUE),
+    mean_recall = mean(recall, na.rm = TRUE),
+    mean_recognition = mean(recognition, na.rm = TRUE)
+  )
+ggplot(data, aes(x = gaze_behavior, y = mean_recall, color = condition)) +
+  geom_point(size=5) +
+  geom_line(size=1, aes(group = condition)) +
+  #facet_wrap(~condition) +
+  theme_classic(base_size = 20) +
+  guides(color = guide_legend(ncol = 1)) +
+  scale_color_manual(values = c("Count_Sales_Signs" = "navyblue", "Free_Viewing" = "black"),
+                     labels = c("Count_Sales_Signs" = "Sale Sign Counting", "Free_Viewing" = "Free Viewing")) +
+  scale_x_discrete(labels=c(not_fixated = "Fixation = 0", fixated = "Fixation >= 1")) +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, .2)) +  # Prevents the y-axis from extending below zero
+  theme(legend.position = "none",
+        axis.title.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.x=element_blank(),  # Removes x axis labels
+        #axis.ticks.x=element_blank(),
+        axis.text.y=element_blank(),  # Removes x axis labels
+        #axis.ticks.y=element_blank(),
+        axis.line.x=element_line(color="black"))  # Ensure the x-axis line is visible
+
 recognition <-
   glmmTMB(recognition ~ fixation_duration+condition + (1|billboard_name), data = updated_data, family = "binomial")
 Anova(recognition, type="2")
-performance(recognition)
-check_collinearity(recognition)
 ggplot(updated_data, aes(x = fixation_duration, y = recognition, color = condition)) +
   geom_point(alpha = 0.5) +  # Scatter plot with semi-transparent points
   geom_smooth(method = "glm", method.args = list(family = "binomial"), se = FALSE) +  # Logistic regression curves
@@ -178,14 +163,34 @@ ggplot(updated_data, aes(x = fixation_duration, y = recognition, color = conditi
         #axis.ticks.y=element_blank(),
         axis.line.x=element_line(color="black"))  # Ensure the x-axis line is visible
 
+recognition2 <-
+  glmmTMB(recognition ~ gaze_behavior+condition + (1|billboard_name), data = updated_data, family = "binomial")
+Anova(recognition2, type="2")
+ggplot(data, aes(x = gaze_behavior, y = mean_recognition, color = condition)) +
+  geom_point(size=5) +
+  geom_line(size=1, aes(group = condition)) +
+  #facet_wrap(~condition) +
+  theme_classic(base_size = 20) +
+  guides(color = guide_legend(ncol = 1)) +
+  scale_color_manual(values = c("Count_Sales_Signs" = "navyblue", "Free_Viewing" = "black"),
+                     labels = c("Count_Sales_Signs" = "Sale Sign Counting", "Free_Viewing" = "Free Viewing")) +
+  scale_x_discrete(labels=c(not_fixated = "Fixation = 0", fixated = "Fixation >= 1")) +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, .6), breaks = seq(0, .6, by = .2)) +  # Prevents the y-axis from extending below zero
+  theme(legend.position = "none",
+        axis.title.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.x=element_blank(),  # Removes x axis labels
+        #axis.ticks.x=element_blank(),
+        axis.text.y=element_blank(),  # Removes x axis labels
+        #axis.ticks.y=element_blank(),
+        axis.line.x=element_line(color="black"))  # Ensure the x-axis line is visible
+
 gazeduration <- 
   glmmTMB(fixation_duration ~ condition+billboard_attention_level+position_index + 
             (1 | billboard_name)+ (1| subject), 
-          ziformula = ~ (1 | billboard_name)+ (1| subject),  # Formula for zero-inflation component
-          family = ziGamma(link = "log"),  # Specify zero-inflated Gamma family
+          family = Gamma(link = "log"),  
           data = updated_data)
 Anova(gazeduration, type="2")
-performance(gazeduration)
 data2_1 <- 
   updated_data %>%
   group_by(condition) %>%
@@ -220,137 +225,137 @@ ggplot() +
         axis.title.y = element_blank(),
         axis.text.x = element_blank(), 
         # axis.ticks.x = element_blank(),
-        axis.text.y = element_blank(),  
+        #axis.text.y = element_blank(),  
         # axis.ticks.y = element_blank(),
         axis.line.x = element_line(color = "black")) 
 
-# fixationcount <- 
-#   glmmTMB(fixation_count ~ condition+billboard_attention_level+position_index + 
-#             (1 | billboard_name)+ (1| subject), family = poisson, data = updated_data)
-# Anova(fixationcount, type="3")
-# performance(fixationcount)
-# data3_1 <- updated_data %>%
-#   group_by(condition, gaze_behavior) %>%
-#   summarise(
-#     count = n()
-#   ) %>%
-#   mutate(total_count = sum(count),
-#          proportion = count / total_count)
-# ggplot(data3_1, aes(x = condition, y = proportion, fill = gaze_behavior)) +
-#   geom_bar(stat = "identity", position = "stack", size = 2) +
-#   scale_fill_manual(values = c("not_fixated" = "darkgray", "fixated" = "gray40", "very_fixated" = "gray20")) + 
-#   scale_color_manual(values = c("Count_Sales_Signs" = "navyblue", "Free_Viewing" = "black"),
-#                     labels = c("Count_Sales_Signs" = "Sale Sign Counting", "Free Viewing" = "Free Viewing")) + 
-#   scale_y_continuous(expand = c(0, 0), limits = c(0, 1), breaks = seq(0, 1, by = .25)) +  # Prevents the y-axis from extending below zero
-#   theme_classic(base_size = 20) +
-#   theme(legend.position = "none",
-#         axis.title.x=element_blank(),
-#         axis.title.y=element_blank(),
-#         axis.text.x=element_blank(),  # Removes x axis labels
-#         axis.ticks.x=element_blank(),
-#         axis.text.y=element_blank(),  # Removes x axis labels
-#         #axis.ticks.y=element_blank(),
-#         axis.line.x=element_line(color="black"))  # Ensure the x-axis line is visible
-# data3_2 <- 
-#   updated_data %>%
-#   group_by(position_index, gaze_behavior) %>%
-#   summarise(
-#     count = n()
-#   ) %>%
-#   mutate(total_count = sum(count),
-#          proportion = count / total_count)
-# ggplot(data3_2, aes(x = position_index, y = proportion, fill = gaze_behavior)) +
-#   geom_bar(stat = "identity", position = "stack", size = 2) +
-#   scale_fill_manual(values = c("not_fixated" = "darkgray", "fixated" = "gray40", "very_fixated" = "gray20")) + 
-#   scale_y_continuous(expand = c(0, 0), limits = c(0, 1.1), breaks = seq(0, 1, by = .25)) +  # Prevents the y-axis from extending below zero
-#   theme_classic(base_size = 20) +
-#   theme(legend.position = "none",
-#         axis.title.x=element_blank(),
-#         axis.title.y=element_blank(),
-#         axis.text.x=element_blank(),  # Removes x axis labels
-#         #axis.ticks.x=element_blank(),
-#         axis.text.y=element_blank(),  # Removes x axis labels
-#         #axis.ticks.y=element_blank(),
-#         axis.line.x=element_line(color="black"))  # Ensure the x-axis line is visible
-
-data4 <- 
-  updated_data %>%
-  group_by(position_index) %>%
+fixation <-
+  glmmTMB(gaze_behavior ~ condition+billboard_attention_level+position_index +
+            (1 | billboard_name)+ (1| subject), family = "binomial", data = updated_data)
+Anova(fixation, type="2")
+data3_1 <- updated_data %>%
+  group_by(condition, gaze_behavior) %>%
   summarise(
-    count = n(),
-    total_fixation = sum(fixated, na.rm = TRUE),
-    total_recall = sum(recall, na.rm = TRUE),
-    total_recognition = sum(recognition, na.rm = TRUE),
-    total_gaze_duration = sum(fixation_duration, na.rm = TRUE),
-    total_fixation_count = sum(fixation_count, na.rm = TRUE),
-    fixation_rate = total_fixation/count,
-    recall_rate = total_recall/count,
-    recognition_rate = total_recognition/count,
-    median_gaze_duration = median(fixation_duration, na.rm = TRUE),
-    median_fixation_count = median(fixation_count, na.rm = TRUE)
-  ) 
-colnames(data4)
-  
-ggplot() +
-  geom_point(data = data4 , aes(x = position_index, y = recall_rate), size = 2) + 
-  geom_line(data = data4 , aes(x = position_index, y = recall_rate, group=1), size = 1) +
-  geom_point(data = data4 , aes(x = position_index, y = recognition_rate), size = 2) + 
-  geom_line(data = data4, aes(x = position_index, y = recognition_rate, group=1), size = 1, linetype="twodash") +
-  theme_classic(base_size = 20) +
-  theme(legend.position = "none",
-        axis.title.x = element_blank(),
-        axis.title.y = element_blank(),
-        axis.text.x = element_blank(), 
-        # axis.ticks.x = element_blank(),
-        axis.text.y = element_blank(),  
-        # axis.ticks.y = element_blank(),
-        axis.line.x = element_line(color = "black")) 
-
-ggplot() +
-  geom_point(data = data4 , aes(x = position_index, y = median_gaze_duration), size = 2) + 
-  geom_line(data = data4, aes(x = position_index, y = median_gaze_duration, group=1), size = 1) +
-  geom_point(data = data4 , aes(x = position_index, y = median_fixation_count), size = 2) + 
-  geom_line(data = data4, aes(x = position_index, y = median_fixation_count, group=1), size = 1, linetype="dashed") +
-  theme_classic(base_size = 20) +
-  theme(legend.position = "none",
-        axis.title.x = element_blank(),
-        axis.title.y = element_blank(),
-        axis.text.x = element_blank(), 
-        # axis.ticks.x = element_blank(),
-        axis.text.y = element_blank(),  
-        # axis.ticks.y = element_blank(),
-        axis.line.x = element_line(color = "black")) 
-
-
-#Percent indicated as attention-grabbing
-df_survey <- read_csv('data/02_qualtrics_data/recognition_survey_vr_city_cleaned.csv')
-colnames(df_survey)
-df_survey_filter <- df_survey %>%
-  filter(!Subject %in% c("sub020", "sub017"))
-attentiongrabbingcheck <- df_survey_filter %>%
-  select(ends_with("_a")) %>%
-  summarise(across(everything(), ~mean(.x == 1) * 100))
-agcheck_pivot <- attentiongrabbingcheck %>%
-  pivot_longer(
-    cols = everything(),
-    names_to = "billboard_name",
-    values_to = "percent_pass"
+    count = n()
   ) %>%
-  mutate(billboard_name = str_remove(billboard_name, "_a$")) %>%
-  mutate(billboard_name = case_when(
-    billboard_name == "healthsunprotect" ~ "health_sunprotection",
-    billboard_name == "health_mentalhealt" ~ "health_mentalhealth",
-    TRUE ~ billboard_name  # Keep all other values unchanged
-  )) %>%
-  arrange(desc(percent_pass))
-print(agcheck_pivot, n=40)
+  mutate(total_count = sum(count),
+         proportion = count / total_count)
+ggplot(data3_1, aes(x = condition, y = proportion, fill = gaze_behavior)) +
+  geom_bar(stat = "identity", position = "stack", size = 2) +
+  scale_fill_manual(values = c("not_fixated" = "darkgray", "fixated" = "gray20")) +
+  scale_color_manual(values = c("Count_Sales_Signs" = "navyblue", "Free_Viewing" = "black"),
+                    labels = c("Count_Sales_Signs" = "Sale Sign Counting", "Free Viewing" = "Free Viewing")) +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 1), breaks = seq(0, 1, by = .25)) +  # Prevents the y-axis from extending below zero
+  theme_classic(base_size = 20) +
+  theme(legend.position = "none",
+        axis.title.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.x=element_blank(),  # Removes x axis labels
+        axis.ticks.x=element_blank(),
+        axis.text.y=element_blank(),  # Removes x axis labels
+        #axis.ticks.y=element_blank(),
+        axis.line.x=element_line(color="black"))  # Ensure the x-axis line is visible
+data3_2 <-
+  updated_data %>%
+  group_by(position_index, gaze_behavior) %>%
+  summarise(
+    count = n()
+  ) %>%
+  mutate(total_count = sum(count),
+         proportion = count / total_count)
+ggplot(data3_2, aes(x = position_index, y = proportion, fill = gaze_behavior)) +
+  geom_bar(stat = "identity", position = "stack", size = 2) +
+  scale_fill_manual(values = c("not_fixated" = "darkgray", "fixated" = "gray20")) +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 1.1), breaks = seq(0, 1, by = .25)) +  # Prevents the y-axis from extending below zero
+  theme_classic(base_size = 20) +
+  theme(legend.position = "none",
+        axis.title.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.x=element_blank(),  # Removes x axis labels
+        #axis.ticks.x=element_blank(),
+        axis.text.y=element_blank(),  # Removes x axis labels
+        #axis.ticks.y=element_blank(),
+        axis.line.x=element_line(color="black"))  # Ensure the x-axis line is visible
 
-#demographic information
-mean(df_survey_filter$Age, na.rm = TRUE)
-sd(df_survey_filter$Age, na.rm = TRUE)
-table(df_survey_filter$Gender)
-21/40
-
-
+# data4 <- 
+#   updated_data %>%
+#   group_by(position_index) %>%
+#   summarise(
+#     count = n(),
+#     total_fixation = sum(fixated, na.rm = TRUE),
+#     total_recall = sum(recall, na.rm = TRUE),
+#     total_recognition = sum(recognition, na.rm = TRUE),
+#     total_gaze_duration = sum(fixation_duration, na.rm = TRUE),
+#     total_fixation_count = sum(fixation_count, na.rm = TRUE),
+#     fixation_rate = total_fixation/count,
+#     recall_rate = total_recall/count,
+#     recognition_rate = total_recognition/count,
+#     median_gaze_duration = median(fixation_duration, na.rm = TRUE),
+#     median_fixation_count = median(fixation_count, na.rm = TRUE)
+#   ) 
+# colnames(data4)
+#   
+# ggplot() +
+#   geom_point(data = data4 , aes(x = position_index, y = recall_rate), size = 2) + 
+#   geom_line(data = data4 , aes(x = position_index, y = recall_rate, group=1), size = 1) +
+#   geom_point(data = data4 , aes(x = position_index, y = recognition_rate), size = 2) + 
+#   geom_line(data = data4, aes(x = position_index, y = recognition_rate, group=1), size = 1, linetype="twodash") +
+#   theme_classic(base_size = 20) +
+#   theme(legend.position = "none",
+#         axis.title.x = element_blank(),
+#         axis.title.y = element_blank(),
+#         axis.text.x = element_blank(), 
+#         # axis.ticks.x = element_blank(),
+#         axis.text.y = element_blank(),  
+#         # axis.ticks.y = element_blank(),
+#         axis.line.x = element_line(color = "black")) 
+# 
+# ggplot() +
+#   geom_point(data = data4 , aes(x = position_index, y = median_gaze_duration), size = 2) + 
+#   geom_line(data = data4, aes(x = position_index, y = median_gaze_duration, group=1), size = 1) +
+#   geom_point(data = data4 , aes(x = position_index, y = median_fixation_count), size = 2) + 
+#   geom_line(data = data4, aes(x = position_index, y = median_fixation_count, group=1), size = 1, linetype="dashed") +
+#   theme_classic(base_size = 20) +
+#   theme(legend.position = "none",
+#         axis.title.x = element_blank(),
+#         axis.title.y = element_blank(),
+#         axis.text.x = element_blank(), 
+#         # axis.ticks.x = element_blank(),
+#         axis.text.y = element_blank(),  
+#         # axis.ticks.y = element_blank(),
+#         axis.line.x = element_line(color = "black")) 
+# 
+# 
+# #Percent indicated as attention-grabbing
+# df_survey <- read_csv('data/02_qualtrics_data/recognition_survey_vr_city_cleaned.csv')
+# colnames(df_survey)
+# df_survey_filter <- df_survey %>%
+#   filter(!Subject %in% c("sub020", "sub017"))
+# attentiongrabbingcheck <- df_survey_filter %>%
+#   select(ends_with("_a")) %>%
+#   summarise(across(everything(), ~mean(.x == 1) * 100))
+# agcheck_pivot <- attentiongrabbingcheck %>%
+#   pivot_longer(
+#     cols = everything(),
+#     names_to = "billboard_name",
+#     values_to = "percent_pass"
+#   ) %>%
+#   mutate(billboard_name = str_remove(billboard_name, "_a$")) %>%
+#   mutate(billboard_name = case_when(
+#     billboard_name == "healthsunprotect" ~ "health_sunprotection",
+#     billboard_name == "health_mentalhealt" ~ "health_mentalhealth",
+#     TRUE ~ billboard_name  # Keep all other values unchanged
+#   )) %>%
+#   arrange(desc(percent_pass))
+# print(agcheck_pivot, n=40)
+# 
+# #demographic information
+# mean(df_survey_filter$Age, na.rm = TRUE)
+# sd(df_survey_filter$Age, na.rm = TRUE)
+# table(df_survey_filter$Gender)
+# 21/40
+# 
+# 
+# colnames(updated_data)
 
 
