@@ -1,8 +1,9 @@
-Analysis for {authors blinded} (submitted)
+Analysis for Lim et al., 2026
 =============================================
 
-Data and analysis code for *Title* [link](link_goes_here)
-
+Data and analysis code for *Immersive Media Messages That Catch the Eye
+Examining Factors That Elicit Attention and Replicating the Link Between Attention and Memory
+Sue Lim,HeeJung Cho,Moonsun Jeon,Xiaoran Cui,and Ralf Schmaelzle * [link](https://doi.org/10.1027/1864-1105/a000525).
 
 
 ***
@@ -13,16 +14,16 @@ Data and analysis code for *Title* [link](link_goes_here)
 
 ### Code
 
--   Todo
+-   Notebooks are in the folder
 
 
 ### Data
 
--   Todo
+-   Original data files are too large to be shared, but derived data are in the data subfolder.
 
 ### Dependencies
 
 -   see environment file
 
 
-2024 | {authors blinded} 
+2024 | Sue Lim, Ralf Schmaelzle
