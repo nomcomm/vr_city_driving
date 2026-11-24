@@ -1,7 +1,7 @@
 Analysis for Lim et al., 2026
 =============================================
 
-Data and analysis code for *Immersive Media Messages That Catch the Eye
+Data and analysis code for *Immersive Media Messages That Catch the Eye:
 Examining Factors That Elicit Attention and Replicating the Link Between Attention and Memory
 Sue Lim,HeeJung Cho,Moonsun Jeon,Xiaoran Cui,and Ralf Schmaelzle * [link](https://doi.org/10.1027/1864-1105/a000525).
 
